@@ -1,0 +1,19 @@
+[project]
+name = "demultiplexer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "madriLysh", email = "akhan0106@stu.kau.edu.sa" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "scapy>=2.8.0",
+]
+
+[project.scripts]
+demultiplexer = "demultiplexer:main"
+
+[build-system]
+requires = ["uv_build>=0.12.18,<0.13.0"]
+build-backend = "uv_build"
