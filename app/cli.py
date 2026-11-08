@@ -1,44 +1,51 @@
 import argparse
-from scapy.all import conf 
+from scapy.all import conf
 
-iface_list = {}
 
-def create_args():
-    parse = argparse.ArgumentParser(description='TCP flow demultiplexer')
-    parse.add_argument(
+def parse_args():
+    parser = argparse.ArgumentParser(description='TCP flow demultiplexer')
+    parser.add_argument(
         '--iface',
         metavar='IFACE',
-        help="choose iface by name or number from list. defualt(auto)"
-        )
-    parse.add_argument(
+        help='choose iface by name or number from --list (default: auto)',
+    )
+    parser.add_argument(
         '--list',
         action='store_true',
-        help="list of available ifaces"
-        )
+        help='list available ifaces and exit',
+    )
+    return parser.parse_args()
 
-    return parse.parse_args()
-def data_fields():
-    ifaces = list(conf.ifaces.values())
-    default_name = getattr(conf.iface, "name", conf.iface)
-    return ifaces, default_name
 
-def create_iface_list():
-    ifaces, _ = data_fields()
+def get_ifaces():
+    #all interfaces Scapy sees on this machine.
+    return list(conf.ifaces.values())
 
-    for n, i in enumerate(ifaces, start=1):
-        iface_list[n] = i.name
+
+def default_iface_name():
+    #name of Scapy's default iface (conf.iface may be an object or a plain str)
+    return getattr(conf.iface, 'name', conf.iface)
+
 
 def list_ifaces():
-    ifaces, default_name = data_fields()
+    default = default_iface_name()
+    for number, iface in enumerate(get_ifaces(), start=1):
+        ip = iface.ip or 'no IP'
+        mark = '  (default)' if iface.name == default else ''
+        print(f'{number:>2}. {iface.name:<12} {ip:<16} {iface.description}{mark}')
 
-    for n, i in enumerate(ifaces, start=1):
-        ip = i.ip or 'no IP'
-        mark = '  (default)' if i.name == default_name else ''
-        print(f'{n:>2}. {i.name:<12} {ip:<16} {i.description}{mark}')
 
 def resolve_iface(value: str):
-    try:
-        iface = iface_list[int(value)]
-    except ValueError:
-        iface = value
-    return iface
+    #turn what the user typed (a number from --list, or a name) into an iface.
+    iface_by_number = dict(enumerate(get_ifaces(), start=1))
+
+    if value.isdigit():
+        iface = iface_by_number.get(int(value))
+        if iface is None:
+            raise SystemExit(f'No interface number {value}. Run with --list to see options.')
+        return iface
+
+    for iface in iface_by_number.values():
+        if value in (iface.name, iface.description):
+            return iface
+    raise SystemExit(f"Unknown interface '{value}'. Run with --list to see options.")
