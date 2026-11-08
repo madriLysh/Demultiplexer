@@ -1,8 +1,11 @@
-
-OUTPUT_DIR = "output"
+from pathlib import Path
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "ouput"
 
 # Flow table: normalized flow key -> open file handle
 flows = {}
+
+def init_storage():
+    return OUTPUT_DIR.mkdir(exist_ok=True)
 
 def flow_filename(key) -> str:
     """Build the output filename from a normalized flow key."""
