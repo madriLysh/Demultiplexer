@@ -1,5 +1,5 @@
 from scapy.layers.inet import IP, TCP
-from scapy.packet import Packet
+from scapy.packet import Packet, Raw
 from storage import store
 
 def flow_key(pkt: Packet):
@@ -18,8 +18,7 @@ def handle_packet(pkt: Packet):
     if key is None:
         return
 
-    data = bytes(pkt[TCP].payload)
-    if not data:
+    if not pkt.haslayer(Raw):
         return 
-    store(key, data)
+    store(key, bytes(pkt[Raw].load))
     
