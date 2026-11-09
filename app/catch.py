@@ -1,6 +1,10 @@
+import logging
+
 from demux import handle_packet
 from scapy.error import Scapy_Exception
 from scapy.sendrecv import sniff
+
+logger = logging.getLogger(__name__)
 
 
 def start_capture(iface):
@@ -9,7 +13,7 @@ def start_capture(iface):
         sniff(iface=iface, filter='tcp', prn=handle_packet, store=False)
     except Scapy_Exception as e:
         if 'filter' in str(e).lower():
-            print('BPF filter unavailable (libpcap missing); filtering in Python instead.')
+            logger.warning('BPF filter unavailable (libpcap missing); filtering in Python instead.')
             sniff(iface=iface, prn=handle_packet, store=False)
         else:
             raise SystemExit(

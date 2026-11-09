@@ -1,5 +1,5 @@
 import argparse
-from scapy.all import conf
+from scapy.config import conf
 
 
 def parse_args():
@@ -19,7 +19,7 @@ def parse_args():
 
 def get_ifaces():
     #all interfaces Scapy sees on this machine.
-    return list(conf.ifaces.values())
+    return sorted(conf.ifaces.values(), key=lambda i: i.name) 
 
 
 def default_iface_name():
