@@ -15,13 +15,19 @@ def flow_key(pkt: Packet):
     return (a, b) if a < b else (b, a)
 def handle_packet(pkt: Packet):
     #decides to drop or keep the packet
+    ip = get_ip_layer(pkt)
+    if ip is None or not pkt.haslayer(TCP):
+        return 
     key = flow_key(pkt)
     if key is None:
         return
-
+    sender = (ip.src, pkt[TCP].sport)
     if not pkt.haslayer(Raw):
-        return
-    store(key, bytes(pkt[Raw].load))
+            return
+    payload = bytes(pkt[Raw].load)
+    seq = pkt[TCP].seq
+
+    store(key, sender, payload, seq)
 
 def get_ip_layer(pkt: Packet):
     if pkt.haslayer(IPv6):

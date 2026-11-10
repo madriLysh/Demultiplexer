@@ -62,15 +62,23 @@ readable in the output files.
 Capture uses a `tcp` BPF filter when available; if libpcap lacks BPF support
 the capture is retried without the filter instead of failing.
 
+### TCP reassembly
+
+Payloads are reassembled per direction using TCP sequence numbers, so
+out-of-order segments, retransmissions and partially overlapping segments are
+written in the correct order. Each direction of a flow tracks its own next
+expected sequence number; segments that arrive early are held in a buffer and
+flushed once the gap in front of them is filled, while retransmitted or
+already-covered bytes are dropped.
+
 ## Known limitations
 
-- Payloads are appended in packet arrival order; segments are not reordered by
-  TCP sequence numbers, so out-of-order delivery appears out of order in the
-  output file.
+- Reassembly anchors on the first data segment seen per direction. If capture
+  starts mid-flow, earlier segments that were never observed stay missing.
 
 ## Future work
 
-- TCP reassembly via sequence numbers (handling out-of-order and retransmitted
-  segments).
+- Handle mid-flow capture starts (e.g. anchor on the lowest buffered segment
+  instead of the first observed one).
 - `argparse` is already used for CLI parsing and can be extended with more
   options (output directory, BPF filter override, pcap input, etc.).
