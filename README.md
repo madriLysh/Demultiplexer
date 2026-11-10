@@ -69,7 +69,9 @@ out-of-order segments, retransmissions and partially overlapping segments are
 written in the correct order. Each direction of a flow tracks its own next
 expected sequence number; segments that arrive early are held in a buffer and
 flushed once the gap in front of them is filled, while retransmitted or
-already-covered bytes are dropped.
+already-covered bytes are dropped. On shutdown, any segments still stuck in a
+buffer (a gap that never got filled, i.e. truly lost data) are reported as a
+warning before the flow files are closed.
 
 ## Known limitations
 
