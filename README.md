@@ -77,10 +77,3 @@ warning before the flow files are closed.
 
 - Reassembly anchors on the first data segment seen per direction. If capture
   starts mid-flow, earlier segments that were never observed stay missing.
-
-## Future work
-
-- Handle mid-flow capture starts (e.g. anchor on the lowest buffered segment
-  instead of the first observed one).
-- `argparse` is already used for CLI parsing and can be extended with more
-  options (output directory, BPF filter override, pcap input, etc.).
