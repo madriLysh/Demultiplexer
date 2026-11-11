@@ -1,7 +1,7 @@
 from scapy.layers.inet import IP, TCP
 from scapy.layers.inet6 import IPv6
 from scapy.packet import Packet, Raw
-from storage import store
+from .storage import store
 
 def flow_key(pkt: Packet):
     #Return a direction-independent connection ID, or None if not TCP/IP

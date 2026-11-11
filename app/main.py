@@ -1,8 +1,8 @@
 import logging
 from scapy.config import conf
-from catch import start_capture
-from cli import parse_args, list_ifaces, resolve_iface
-from storage import OUTPUT_DIR, close_all, init_storage
+from .catch import start_capture
+from .cli import parse_args, list_ifaces, resolve_iface
+from .storage import OUTPUT_DIR, close_all, init_storage
 
 logger = logging.getLogger(__name__)
 

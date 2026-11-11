@@ -1,4 +1,3 @@
-import pytest
 from unittest import mock
 
 from scapy.layers.inet import IP, TCP, UDP
@@ -49,11 +48,13 @@ def test_flow_key_tcp_without_ip_returns_none():
     pkt = TCP()
     assert flow_key(pkt) is None
 
+
 def test_handle_packet_no_ip_does_nothing():
     pkt = Ether() / Raw(b"x")
     with mock.patch("app.demux.store") as fake_store:
         handle_packet(pkt)
         fake_store.assert_not_called()
+
 
 def test_handle_packet_syn_no_payload_does_nothing():
     pkt = IP() / TCP(flags="S")
@@ -61,8 +62,11 @@ def test_handle_packet_syn_no_payload_does_nothing():
         handle_packet(pkt)
         fake_store.assert_not_called()
 
-def test_hanlde_packet_forwards_payload():
-    pkt = make_tcp(..., ..., ..., ..., seq=1000, payload=b"hello")
+
+def test_handle_packet_forwards_payload():
+    pkt = make_tcp("10.0.0.1", "10.0.0.2", 12345, 80, seq=1000, payload=b"hello")
     with mock.patch("app.demux.store") as fake_store:
         handle_packet(pkt)
-        fake_store.assert_called_once()
+        expected_key = (("10.0.0.1", 12345), ("10.0.0.2", 80))
+        expected_sender = ("10.0.0.1", 12345)
+        fake_store.assert_called_once_with(expected_key, expected_sender, b"hello", 1000)

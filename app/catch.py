@@ -1,6 +1,6 @@
 import logging
 
-from demux import handle_packet
+from .demux import handle_packet
 from scapy.error import Scapy_Exception
 from scapy.sendrecv import sniff
 
