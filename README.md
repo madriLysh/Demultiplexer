@@ -6,11 +6,21 @@ so you can inspect individual flows instead of one interleaved packet stream.
 
 ## Usage
 
+The project is managed with [uv](https://docs.astral.sh/uv/). Install the
+dependencies once with `uv sync`, then run the `demultiplexer` command:
+
 ```
-sudo python -m app.main            # capture on the default interface
-sudo python -m app.main -i eth0    # capture on a specific interface
-python -m app.main --list          # list available interfaces
+uv run demultiplexer --list           # list available interfaces
+sudo uv run demultiplexer             # capture on the default interface
+sudo uv run demultiplexer --iface eth0  # capture on a specific interface
 ```
+
+The equivalent without the installed script is `uv run python -m app.main`
+(with the same flags). Note the app must be run as a module (`python -m
+app.main`), not as `python app/main.py`, because it uses package-relative
+imports.
+
+Run the test suite with `uv run pytest`.
 
 Live capture needs root/admin privileges (Npcap on Windows with the Npcap
 SDK installed and Scapy's Npcap bindings). Press Ctrl+C to stop; a summary of
